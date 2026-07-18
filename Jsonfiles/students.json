@@ -1,0 +1,41 @@
+{
+  "students": [
+    {
+      "id": "1",
+      "name": "Shubham",
+      "location": "US",
+      "courses": [
+        "python",
+        "java"
+      ]
+    },
+    {
+      "id": "2",
+      "name": "Shreyas",
+      "location": "IND",
+      "courses": [
+        "selenium",
+        "playwright"
+      ]
+    },
+    {
+      "courses": [
+        "C",
+        "C++"
+      ],
+      "name": "scott",
+      "location": "France",
+      "id": "89oNWjn--Ts"
+    },
+    {
+      "courses": [
+        "C",
+        "C++"
+      ],
+      "name": "scott",
+      "location": "France",
+      "id": "EHhmebVhLQQ"
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
+}

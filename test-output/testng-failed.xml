@@ -5,7 +5,7 @@
     <classes>
       <class name="crud.crudrequests">
         <methods>
-          <include name="getUsers"/>
+          <include name="createuserjsoblibrary"/>
         </methods>
       </class> <!-- crud.crudrequests -->
     </classes>

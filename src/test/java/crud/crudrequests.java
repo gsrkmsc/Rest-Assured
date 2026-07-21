@@ -5,6 +5,7 @@ import org.json.JSONTokener;
 import org.testng.annotations.Test;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static io.restassured.module.jsv.JsonSchemaValidator.matchesJsonSchemaInClasspath;
+import net.datafaker.Faker;
 
 import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
@@ -26,8 +27,9 @@ import java.util.HashMap;
 public class crudrequests {
 
     public static String name;
+    public static String Id;
     
-   // @Test(priority=1)
+    @Test(priority=1)
     public void createuserhashmap() {
 
         HashMap<String, String> requestBody = new HashMap<>();
@@ -35,63 +37,62 @@ public class crudrequests {
         requestBody.put("email", "jeevan1@gmail.com");
         requestBody.put("role", "user");
 
-        Response response = given()
-            .header("x-api-key", "free_user_3EieSBamYR9arNNtcCUWPnxSUXp")
+        Response response =
+        given()
+        //.header("x-api-key", "free_user_3EieSBamYR9arNNtcCUWPnxSUXp")
             .contentType("application/json")
             .body(requestBody)
-            .log().all()
         .when()
+            .post("http://localhost:3000/users")
             //.post("https://reqres.in/api/test-suite/collections/users/records")
-            .post("https://reqres.in/api/users")
-            
-         .then()
-         .log().all()
-        .statusCode(201)                                // ✅ validate status code
-        .body(matchesJsonSchemaInClasspath("createuser.json")) //It will validate the field of entire response it will be src test resources
-        .body("name", equalTo("jeevan1"))                 // ✅ validate name
-        .body("email", equalTo("jeevan1@gmail.com"))      // ✅ validate email
-        .body("role", equalTo("user"))
-        .extract().response();
-        
-     String name = response.jsonPath().getString("name");
+        .then()
+            .statusCode(201)
+            .log().all()
+            .extract().response();
 
-        System.out.println("Captured userName: " + name);
+        Id = response.jsonPath().getString("id");
 
-        assertThat(response.jsonPath().getString("email"), equalTo(requestBody.get("email")));
-        assertThat(response.jsonPath().getString("role"), equalTo(requestBody.get("role")));
+        System.out.println("Created userId: " + Id);
     }
     
   //POJO
-    // @Test(priority=2)
+     @Test(priority=2)
      public void createuserpojo() {
     
-     	pojopostrequest requestbodypojo= new pojopostrequest();
-     	requestbodypojo.setName("Taman");
-     	requestbodypojo.setEmail("taman@gmail.com");
-     	requestbodypojo.setRole("Admin");
+    	 Faker faker = new Faker();    //faker will add random value and dependency added in pom.xml and faker is imported import net.datafaker.Faker
+
+    	 pojopostrequest requestbodypojo = new pojopostrequest();
+    	 requestbodypojo.setName(faker.name().fullName());
+    	 requestbodypojo.setEmail(faker.internet().emailAddress());
+    	 requestbodypojo.setRole(faker.job().position());   // or pick from a fixed list, see below
      	
 
          Response response = given()
-             .header("x-api-key", "free_user_3EieSBamYR9arNNtcCUWPnxSUXp")
+             //.header("x-api-key", "free_user_3EieSBamYR9arNNtcCUWPnxSUXp")
              .contentType("application/json")
              .body(requestbodypojo)
          .when()
-             .post("https://reqres.in/api/test-suite/collections/users/records")
+               .post("http://localhost:3000/users")
+             //.post("https://reqres.in/api/test-suite/collections/users/records")
              
-          .then()
-         .statusCode(201)
-         .body(matchesJsonSchemaInClasspath("createuser.json"))
-         .body("name", equalTo("Taman"))                 // ✅ validate name
-         .body("email", equalTo("taman@gmail.com"))      // ✅ validate email
-         .body("role",equalTo("Admin"))
-         .log().all()                                    // ✅ print full response
-         .extract().response()
-         .path("id");                                    // ✅ extract id
+               .then()
+               .statusCode(201)
+               .body(matchesJsonSchemaInClasspath("createuser.json"))
+               .body("name", equalTo(requestbodypojo.getName()))
+               .body("email", equalTo(requestbodypojo.getEmail()))
+               .log().all()
+               .extract().response();
+
+           Id = response.jsonPath().getString("id");   // ← extract id separately, into your String field
+
+           System.out.println("Created userId (pojo): " + Id);
      }
      
    //JSON Library
-     //@Test(priority=3)
+     @Test(priority=3)
      public void createuserjsoblibrary() {
+    	 
+    	 
     
      	JSONObject requestbodyjsonobject= new JSONObject();
      	requestbodyjsonobject.put("name","rahul");
@@ -100,11 +101,12 @@ public class crudrequests {
      	
 
          Response response = given()
-             .header("x-api-key", "free_user_3EieSBamYR9arNNtcCUWPnxSUXp")
+             //.header("x-api-key", "free_user_3EieSBamYR9arNNtcCUWPnxSUXp")
              .contentType("application/json")
              .body(requestbodyjsonobject.toString())     //for jsonobject tostring is compulsory
          .when()
-             .post("https://reqres.in/api/test-suite/collections/users/records")
+               .post("http://localhost:3000/users")
+             //.post("https://reqres.in/api/test-suite/collections/users/records")
              
           .then()
          .statusCode(201)                                // ✅ validate status code
@@ -113,11 +115,11 @@ public class crudrequests {
          .body("role",equalTo("administratory"))
          .log().all()                                    // ✅ print full response
          .extract().response();
-                                             // ✅ extract id
+                                             
      }
 
    //External File
-    // @Test(priority=4)
+     @Test(priority=4)
      public void createuserexternalfile() throws FileNotFoundException {
     
      	File f=new File("C:\\Eclipse\\Testing Practice Project\\AssuredAPI\\src\\test\\resources\\createuserexternal.json");
@@ -127,11 +129,12 @@ public class crudrequests {
      	
 
          given()
-             .header("x-api-key", "free_user_3EieSBamYR9arNNtcCUWPnxSUXp")
+             //.header("x-api-key", "free_user_3EieSBamYR9arNNtcCUWPnxSUXp")
              .contentType("application/json")
              .body(data.toString())     //for jsonobject tostring is compulsory
          .when()
-             .post("https://reqres.in/api/test-suite/collections/users/records")
+             .post("http://localhost:3000/users")
+             //.post("https://reqres.in/api/test-suite/collections/users/records")
              
           .then()
          .statusCode(201)                                // ✅ validate status code
@@ -143,50 +146,58 @@ public class crudrequests {
                                             
      }
 
-    @Test(priority=1)
-    public void getUsers() {
-        given()
-            .header("x-api-key", "free_user_3EieSBamYR9arNNtcCUWPnxSUXp")
-        .when()
-            .get("https://reqres.in/api/users")
-        .then()
-            .statusCode(200)
-            //.body("name", equalTo(name))
-            .log().all();
-    }
+     @Test(priority=5)
+     public void getUsers() {
+         Response response = 
+         given()
+             //.header("x-api-key", "free_user_3EieSBamYR9arNNtcCUWPnxSUXp")
+         .when()
+             .get("http://localhost:3000/users")
+         .then()
+             .statusCode(200)
+             .log().all()
+             .extract().response();
+
+         // dynamically grab the first user's id from the response
+         
+         
+         //Id = response.jsonPath().getString("[0].id");
+
+         //System.out.println("Extracted userId: " + Id);
+         
+     }
 
     
       
 	
 
-	//@Test(priority=6)
-    public void updateuser() {
+     @Test(priority=6, dependsOnMethods = "createuserhashmap")
+     public void updateuser() {
 
-        HashMap<String, String> requestBody = new HashMap<>();
-        requestBody.put("name", "madhu");
-        requestBody.put("email", "madhu@gmail.com");
+         HashMap<String, String> requestBody = new HashMap<>();
+         requestBody.put("id", Id);
+         requestBody.put("name", "madhu@gmail.com");
+         requestBody.put("email", "madhu@gmail.com");
+         requestBody.put("role", "clerk");
 
-        given()                                          
-            .header("x-api-key", "free_user_3EieSBamYR9arNNtcCUWPnxSUXp")
-            .contentType("application/json")
-            .body(requestBody)
-        .when()
-            .put("https://reqres.in/api/test-suite/collections/users/records/" + name)
-        .then()
-            .statusCode(200)
-            .log().all();                                 
-    }
-    
-    //@Test(priority=7)
-    
-    public void deleteuser() {
-    	
-    	given()
-        .header("x-api-key", "free_user_3EieSBamYR9arNNtcCUWPnxSUXp")
-    .when()
-        .delete("https://reqres.in/api/test-suite/collections/users/records/" + name)
-    .then()
-        .statusCode(204)   // DELETE returns 204 No Content
-        .log().all();
-    }
+         given()
+             .contentType("application/json")
+             .body(requestBody)
+         .when()
+             .put("http://localhost:3000/users/" + Id)
+         .then()
+             .statusCode(200)
+             .log().all();
+     }
+
+     @Test(priority=7, dependsOnMethods = "createuserhashmap")
+     public void deleteuser() {
+
+         given()
+         .when()
+             .delete("http://localhost:3000/users/" + Id)
+         .then()
+             .statusCode(200)
+             .log().all();
+     }
 }

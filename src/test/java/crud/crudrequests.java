@@ -28,6 +28,9 @@ public class crudrequests {
 
     public static String name;
     public static String Id;
+    public static String pojoId;
+    public static String JsonId;
+    public static String ExternalFileId;
     
     @Test(priority=1)
     public void createuserhashmap() {
@@ -83,9 +86,9 @@ public class crudrequests {
                .log().all()
                .extract().response();
 
-           Id = response.jsonPath().getString("id");   // ← extract id separately, into your String field
+           pojoId = response.jsonPath().getString("id");   // ← extract id separately, into your String field
 
-           System.out.println("Created userId (pojo): " + Id);
+           System.out.println("Created userId (pojo): " + pojoId);
      }
      
    //JSON Library
@@ -115,6 +118,10 @@ public class crudrequests {
          .body("role",equalTo("administratory"))
          .log().all()                                    // ✅ print full response
          .extract().response();
+         
+         JsonId = response.jsonPath().getString("id");   // ← extract id separately, into your String field
+
+         System.out.println("Created userId (pojo): " + JsonId);
                                              
      }
 
@@ -128,7 +135,7 @@ public class crudrequests {
      	JSONObject data=new JSONObject(jt);
      	
 
-         given()
+         Response response=given()
              //.header("x-api-key", "free_user_3EieSBamYR9arNNtcCUWPnxSUXp")
              .contentType("application/json")
              .body(data.toString())     //for jsonobject tostring is compulsory
@@ -143,6 +150,10 @@ public class crudrequests {
          .body("role",equalTo("accountant"))              //validated role
          .log().all()                                    // ✅ print full response
          .extract().response();
+         
+         ExternalFileId = response.jsonPath().getString("id");   // ← extract id separately, into your String field
+
+         System.out.println("Created userId (pojo): " + ExternalFileId);
                                             
      }
 
